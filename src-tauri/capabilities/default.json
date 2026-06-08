@@ -1,0 +1,13 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Capability for the main window and remote YTM webview",
+  "windows": ["main", "ytmusic_window"],
+  "permissions": [
+    "core:default",
+    "opener:default"
+  ],
+  "remote": {
+    "urls": ["https://music.youtube.com/*"]
+  }
+}

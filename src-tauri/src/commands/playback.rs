@@ -170,16 +170,24 @@ pub async fn toggle_ytmusic_visibility(app: AppHandle, visible: bool) -> Result<
     }
 
     // Show/hide the separate ytmusic_window for login
-    let yt_window = app.get_webview_window("ytmusic_window")
+    let yt_window = app.get_window("ytmusic_window")
         .ok_or("YouTube Music window not found")?;
 
     if visible {
         let _ = yt_window.show();
         let _ = yt_window.set_focus();
+
+        // Automatically redirect to login page if we are on YouTube Music and not logged in
+        if let Some(yt_webview) = app.get_webview("ytmusic") {
+            let _ = yt_webview.eval("
+                const loginBtn = document.querySelector('a.sign-in-link') || document.querySelector('.sign-in-link');
+                if (loginBtn) loginBtn.click();
+            ");
+        }
     } else {
         let _ = yt_window.hide();
         // Bring main window back to focus
-        if let Some(main_win) = app.get_webview_window("main") {
+        if let Some(main_win) = app.get_window("main") {
             let _ = main_win.set_focus();
         }
     }

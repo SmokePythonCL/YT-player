@@ -235,7 +235,7 @@
                   <h2>{section.title}</h2>
                   <div class="cards-grid">
                     {#each section.items as item}
-                      <div class="music-card" onclick={() => item.song_id && playTrack(item.song_id)}>
+                      <div class="music-card" onclick={() => item.song_id && playTrack(item.song_id)} role="button" tabindex="0" onkeypress={(e) => e.key === 'Enter' && item.song_id && playTrack(item.song_id)}>
                         <div class="card-art-wrap">
                           {#if item.thumbnail}
                             <img src={item.thumbnail} alt={item.title} class="card-art" loading="lazy" />
@@ -297,7 +297,7 @@
               <h2>Resultados</h2>
               <div class="results-grid">
                 {#each searchResults as song, idx}
-                  <div class="result-row" onclick={() => playTrack(song.song_id)}>
+                  <div class="result-row" onclick={() => playTrack(song.song_id)} role="button" tabindex="0" onkeypress={(e) => e.key === 'Enter' && playTrack(song.song_id)}>
                     <span class="result-idx">{idx + 1}</span>
                     <img src={song.thumbnail || `https://i.ytimg.com/vi/${song.song_id}/mqdefault.jpg`} alt={song.title} class="result-art" />
                     <div class="result-info">

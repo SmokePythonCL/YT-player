@@ -170,7 +170,7 @@ pub async fn toggle_ytmusic_visibility(app: AppHandle, visible: bool) -> Result<
     }
 
     // Show/hide the separate ytmusic_window for login
-    let yt_window = app.get_webview_window("ytmusic_window")
+    let yt_window = app.get_window("ytmusic_window")
         .ok_or("YouTube Music window not found")?;
 
     if visible {
@@ -179,7 +179,7 @@ pub async fn toggle_ytmusic_visibility(app: AppHandle, visible: bool) -> Result<
     } else {
         let _ = yt_window.hide();
         // Bring main window back to focus
-        if let Some(main_win) = app.get_webview_window("main") {
+        if let Some(main_win) = app.get_window("main") {
             let _ = main_win.set_focus();
         }
     }

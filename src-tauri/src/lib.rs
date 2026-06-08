@@ -71,7 +71,7 @@ pub fn run() {
             window.on_window_event(move |event| {
                 if let tauri::WindowEvent::Resized(size) = event {
                     let handle = app_handle_clone.clone();
-                    if let Some(main_win) = handle.get_webview_window("main") {
+                    if let Some(main_win) = handle.get_window("main") {
                         if let Ok(scale_factor) = main_win.scale_factor() {
                             let w = size.width as f64 / scale_factor;
                             let h = size.height as f64 / scale_factor;
@@ -128,9 +128,10 @@ pub fn run() {
                 if let Some(control_wv) = app_handle.get_webview("app_control") {
                     control_wv.open_devtools();
                 }
-                if let Some(ytmusic_wv) = app_handle.get_webview("ytmusic") {
-                    ytmusic_wv.open_devtools();
-                }
+                // Do not open devtools for ytmusic to avoid missing source map errors
+                // if let Some(ytmusic_wv) = app_handle.get_webview("ytmusic") {
+                //     ytmusic_wv.open_devtools();
+                // }
             }
             
             Ok(())

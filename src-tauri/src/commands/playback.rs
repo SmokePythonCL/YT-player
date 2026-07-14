@@ -78,7 +78,7 @@ pub async fn report_playback_state(app: AppHandle, state: PlaybackState) -> Resu
         };
 
         if is_new_song && !state.song_id.is_empty() {
-            println!("[Rust] Song changed to: {} - {}", state.title, state.artist);
+            tracing::info!("Song changed to: {} - {}", state.title, state.artist);
             *last_song = Some(state.song_id.clone());
             let song = SongMetadata {
                 song_id: state.song_id,
@@ -105,7 +105,7 @@ pub async fn report_playback_state(app: AppHandle, state: PlaybackState) -> Resu
 
 #[tauri::command]
 pub async fn play_song(app: AppHandle, song_id: String) -> Result<(), String> {
-    println!("[Rust] play_song called with id: {}", song_id);
+    tracing::info!("play_song called with id: {}", song_id);
     if song_id.is_empty() {
         return Err("Song ID cannot be empty".to_string());
     }
@@ -113,14 +113,14 @@ pub async fn play_song(app: AppHandle, song_id: String) -> Result<(), String> {
         "window.location.href = 'https://music.youtube.com/watch?v={}';",
         song_id
     )).map_err(|e| {
-        println!("[Rust] play_song eval error: {}", e);
+        tracing::error!("play_song eval error: {}", e);
         e.to_string()
     })
 }
 
 #[tauri::command]
 pub async fn search_ytmusic(app: AppHandle, query: String) -> Result<(), String> {
-    println!("[Rust] search_ytmusic called with query: {}", query);
+    tracing::info!("search_ytmusic called with query: {}", query);
     if query.is_empty() {
         return Err("Query cannot be empty".to_string());
     }
@@ -129,32 +129,32 @@ pub async fn search_ytmusic(app: AppHandle, query: String) -> Result<(), String>
         "if (window.__searchYTM) {{ window.__searchYTM('{}'); }} else {{ console.error('window.__searchYTM not found'); }}",
         escaped_query
     )).map_err(|e| {
-        println!("[Rust] search_ytmusic eval error: {}", e);
+        tracing::error!("search_ytmusic eval error: {}", e);
         e.to_string()
     })
 }
 
 #[tauri::command]
 pub async fn get_ytmusic_home(app: AppHandle) -> Result<(), String> {
-    println!("[Rust] get_ytmusic_home called");
+    tracing::info!("get_ytmusic_home called");
     get_ytmusic_webview(&app)?.eval(
         "if (window.__getHomeFeed) { window.__getHomeFeed(); } else { console.error('window.__getHomeFeed not found'); }"
     ).map_err(|e| {
-        println!("[Rust] get_ytmusic_home eval error: {}", e);
+        tracing::error!("get_ytmusic_home eval error: {}", e);
         e.to_string()
     })
 }
 
 #[tauri::command]
 pub async fn report_search_results(app: AppHandle, results: serde_json::Value) -> Result<(), String> {
-    println!("[Rust] report_search_results called with {} items", results.as_array().map(|a| a.len()).unwrap_or(0));
+    tracing::info!("report_search_results called with {} items", results.as_array().map(|a| a.len()).unwrap_or(0));
     app.emit("search-results-received", results)
         .map_err(|e| e.to_string())
 }
 
 #[tauri::command]
 pub async fn report_home_feed(app: AppHandle, sections: serde_json::Value) -> Result<(), String> {
-    println!("[Rust] report_home_feed called with {} sections", sections.as_array().map(|a| a.len()).unwrap_or(0));
+    tracing::info!("report_home_feed called with {} sections", sections.as_array().map(|a| a.len()).unwrap_or(0));
     app.emit("home-feed-received", sections)
         .map_err(|e| e.to_string())
 }
@@ -163,7 +163,7 @@ pub async fn report_home_feed(app: AppHandle, sections: serde_json::Value) -> Re
 pub async fn toggle_ytmusic_visibility(app: AppHandle, visible: bool) -> Result<(), String> {
     use std::sync::atomic::{AtomicBool, Ordering};
     use std::sync::Arc;
-    println!("[Rust] toggle_ytmusic_visibility called: {}", visible);
+    tracing::info!("toggle_ytmusic_visibility called: {}", visible);
 
     if let Some(state) = app.try_state::<Arc<AtomicBool>>() {
         state.store(visible, Ordering::Relaxed);

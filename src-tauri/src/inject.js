@@ -184,7 +184,6 @@
             cleanContext.client.visitorData = contextObj.client.visitorData;
         }
 
-        console.log("[YTM Engine] Final normalized context:", JSON.stringify(cleanContext));
         return { apiKey, context: cleanContext };
     }
 

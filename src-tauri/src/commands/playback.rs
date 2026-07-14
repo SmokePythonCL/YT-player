@@ -109,9 +109,13 @@ pub async fn play_song(app: AppHandle, song_id: String) -> Result<(), String> {
     if song_id.is_empty() {
         return Err("Song ID cannot be empty".to_string());
     }
+
+    // Safely serialize the string to prevent code injection in JavaScript evaluation
+    let safe_song_id = serde_json::to_string(&song_id).map_err(|e| e.to_string())?;
+
     get_ytmusic_webview(&app)?.eval(&format!(
-        "window.location.href = 'https://music.youtube.com/watch?v={}';",
-        song_id
+        "window.location.href = 'https://music.youtube.com/watch?v=' + {};",
+        safe_song_id
     )).map_err(|e| {
         println!("[Rust] play_song eval error: {}", e);
         e.to_string()
@@ -124,10 +128,13 @@ pub async fn search_ytmusic(app: AppHandle, query: String) -> Result<(), String>
     if query.is_empty() {
         return Err("Query cannot be empty".to_string());
     }
-    let escaped_query = query.replace('\\', "\\\\").replace('\'', "\\'").replace('"', "\\\"");
+
+    // Safely serialize the string to prevent code injection
+    let safe_query = serde_json::to_string(&query).map_err(|e| e.to_string())?;
+
     get_ytmusic_webview(&app)?.eval(&format!(
-        "if (window.__searchYTM) {{ window.__searchYTM('{}'); }} else {{ console.error('window.__searchYTM not found'); }}",
-        escaped_query
+        "if (window.__searchYTM) {{ window.__searchYTM({}); }} else {{ console.error('window.__searchYTM not found'); }}",
+        safe_query
     )).map_err(|e| {
         println!("[Rust] search_ytmusic eval error: {}", e);
         e.to_string()

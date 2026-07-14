@@ -230,11 +230,11 @@
             </div>
           {:else}
             <div class="feed-scrollable">
-              {#each homeFeed as section}
+              {#each homeFeed as section (section.title)}
                 <section class="feed-section">
                   <h2>{section.title}</h2>
                   <div class="cards-grid">
-                    {#each section.items as item}
+                    {#each section.items as item (item.song_id || item.title)}
                       <div class="music-card" onclick={() => item.song_id && playTrack(item.song_id)} role="button" tabindex="0" onkeypress={(e) => e.key === 'Enter' && item.song_id && playTrack(item.song_id)}>
                         <div class="card-art-wrap">
                           {#if item.thumbnail}
@@ -296,7 +296,7 @@
             <div class="search-results-list">
               <h2>Resultados</h2>
               <div class="results-grid">
-                {#each searchResults as song, idx}
+                {#each searchResults as song, idx (song.song_id)}
                   <div class="result-row" onclick={() => playTrack(song.song_id)} role="button" tabindex="0" onkeypress={(e) => e.key === 'Enter' && playTrack(song.song_id)}>
                     <span class="result-idx">{idx + 1}</span>
                     <img src={song.thumbnail || `https://i.ytimg.com/vi/${song.song_id}/mqdefault.jpg`} alt={song.title} class="result-art" />
